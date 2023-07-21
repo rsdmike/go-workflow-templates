@@ -2,37 +2,28 @@
 # Copyright (c) Intel Corporation 2023
 # SPDX-License-Identifier: Apache-2.0
 #*********************************************************************/
-FROM node:18-bullseye-slim as builder
+
+#build stage
+FROM golang:alpine AS builder
+RUN apk add --no-cache git ca-certificates && update-ca-certificates
+RUN adduser --disabled-password --gecos "" --home "/nonexistent" --shell "/sbin/nologin" --no-create-home --uid "1000" "scratchuser"
+WORKDIR /go/src/app
+COPY . .
+RUN go mod download
+RUN go mod verify
+RUN CGO_ENABLED=0 GOOS=linux go build -o /go/bin/app -ldflags="-s -w" -v ./cmd/
+
+#final stage
+FROM scratch
+COPY --from=builder /go/bin/app /app
+# Import the user and group files from the builder.
+COPY --from=builder /etc/passwd /etc/passwd
+COPY --from=builder /etc/group /etc/group
+COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
+USER scratchuser
+ENTRYPOINT ["/app"]
+#LABEL Name=app Version=1.0.0 # Add a label if you wish for your app
 LABEL license='SPDX-License-Identifier: Apache-2.0' \
-    copyright='Copyright (c) Intel Corporation 2023'
-WORKDIR /usr/src/app
-COPY ["tsconfig.json","tsconfig.build.json","package.json", "package-lock.json*", "npm-shrinkwrap.json*", "./"]
-
-# Install dependencies
-RUN npm ci
-
-COPY src ./src/
-
-# Transpile TS => JS
-RUN npm run build
-RUN npm prune --production
-
-# Build the final image from alpine base
-FROM alpine:latest
-ENV NODE_ENV=production
-
-RUN addgroup -g 1000 node && adduser -u 1000 -G node -s /bin/sh -D node 
-RUN apk update && apk add nodejs && rm -rf /var/cache/apk/*
-
-COPY --from=builder  /usr/src/app/dist /app/dist
-COPY --from=builder  /usr/src/app/node_modules /app/node_modules
-COPY --from=builder  /usr/src/app/package.json /app/package.json
-
-# set the user to non-root
-USER node
-
-# Default Ports Used
+      copyright='Copyright (c) 2023: Intel'
+      
 EXPOSE 3000
-
-CMD ["node", "/app/dist/index.js"]
-

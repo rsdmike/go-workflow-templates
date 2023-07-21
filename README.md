@@ -1,12 +1,11 @@
-# NodeJS Github Action Workflow Templates
+# Go Github Action Workflow Templates
 
-This template repository contains recommended github action workflows for node.js based applications written in Typescript (can be adapted to work with javascript only). This repository also contains a lightweight scaffold for a Typescript nodejs app with ESLint (with StandardJS rules) and license header formatting for linting and Jest configured for testing.
-
+This template repository contains recommended github action workflows for go based applications.
 ## What Workflows are included?
 
 - [CodeQL Analysis](#codeql-analysis)
 - [CodeQL Report](#codeql-report)
-- [NodeJS Build](#nodejs-build)
+- [Go Build](#go-build)
 - [Docker Build/Publish](#docker-buildpublish)
 - [Conventional Commits](#conventional-commits)
 - [Trivy Container Scan](#trivy-scan)
@@ -26,7 +25,7 @@ Used for static code analysis. See https://codeql.github.com/ for more informati
 
 Used for automatically uploading CodeQL Analysis to Github Artifacts. Useful for providing evidence of scans.
 
-### NodeJS Build - `node.js.yml`
+### Go Build - `go.yml`
 
 #### Prerequistes/Configuration Required
 
@@ -38,14 +37,15 @@ The following commands/scripts must be available in your [package.json](./packag
 
 #### Description
 
-This is the main file for NodeJS builds. This is a matrixed build, meaning it will simultaneously run the steps on multiple versions of NodeJS. For example 16.x,18.x,20.x of NodeJS. We do this to ensure compability with the NodeJS versions that are in maintenance mode, LTS mode, and Current.
+This is the main file for Go builds. This is a matrixed build, meaning it will simultaneously run the steps on multiple versions of Go. For example 1.18.x,1.19.x,1.20.x of Go. We do this to ensure compability with the supported versions of go see https://go.dev/doc/devel/release#policy. 
 
 The build includes the following tasks:
 
-- Transpiling (for typescript)
-- Linting
 - Running Unit Tests
-- Uploading Test Results
+- Ensuring code is formatted using gofmt
+- Ensuring code is vetted using go vet 
+- Ensuring code is linted using [golangci/golangci-lint-action@v3](https://github.com/golangci/golangci-lint-action/tree/v3/)
+- Uploading Test Results (in JUnit format)
 - Uploading Code Coverage results using codecov.io
 
 ### Docker Build/Publish -`docker-build.yml`
@@ -102,7 +102,7 @@ No specific configuration is required for this workflow to run. However, you nee
 
 #### Description
 
-Dependabot is a tool that checks your project dependencies for any known security vulnerabilities or updates. It can automatically create pull requests to update your dependencies to the latest versions. This GitHub Actions workflow configures Dependabot for your Node.js project. It is highly recommended to keep your dependencies up to date not just to benefit from the latest features and improvements, but also to avoid potential security risks associated with outdated packages.
+Dependabot is a tool that checks your project dependencies for any known security vulnerabilities or updates. It can automatically create pull requests to update your dependencies to the latest versions. This GitHub Actions workflow configures Dependabot for your Go project. It is highly recommended to keep your dependencies up to date not just to benefit from the latest features and improvements, but also to avoid potential security risks associated with outdated packages.
 
 The Dependabot Configuration includes the following tasks:
 
