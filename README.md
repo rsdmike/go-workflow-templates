@@ -27,14 +27,6 @@ Used for automatically uploading CodeQL Analysis to Github Artifacts. Useful for
 
 ### Go Build - `go.yml`
 
-#### Prerequistes/Configuration Required
-
-The following commands/scripts must be available in your [package.json](./package.json):
-
-- `npm run build` - should transpile your code from typescript
-- `npm run lint` - should lint your code, for example ESLint
-- `npm run test` - should execute a ci/cd friendly test command (currently set up for Jest)
-
 #### Description
 
 This is the main file for Go builds. This is a matrixed build, meaning it will simultaneously run the steps on multiple versions of Go. For example 1.18.x,1.19.x,1.20.x of Go. We do this to ensure compability with the supported versions of go see https://go.dev/doc/devel/release#policy. 
@@ -106,10 +98,10 @@ Dependabot is a tool that checks your project dependencies for any known securit
 
 The Dependabot Configuration includes the following tasks:
 
-- Daily check for outdated npm packages
-- Automatic pull request creation for outdated npm packages
-- Optional automatic merge for minor and patch updates of npm packages
-- Security advisories notifications for npm packages.
+- Daily check for outdated packages
+- Automatic pull request creation for outdated packages
+- Optional automatic merge for minor and patch updates of packages
+- Security advisories notifications for packages.
 
 ### Semantic Pull Request - `semantic.yml`
 
